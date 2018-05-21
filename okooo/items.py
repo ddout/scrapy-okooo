@@ -14,8 +14,8 @@ class MatchInfo(scrapy.Item):
     id = scrapy.Field()
     area = scrapy.Field()
     country = scrapy.Field()
-    name = scrapy.Field()
-    url = scrapy.Field()
+    match_name = scrapy.Field()
+    match_url = scrapy.Field()
 
 
 class OkoooItem2(scrapy.Item):

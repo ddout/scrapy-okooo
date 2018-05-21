@@ -56,8 +56,8 @@ class okoooSpider(scrapy.Spider):
                 matchInfo["id"] = re.findall("(\d+)", onclick_data)[0]
                 matchInfo["area"] = "欧洲赛事"
                 matchInfo["country"] = country
-                matchInfo["name"] = target_select.css("::text").extract_first()
-                matchInfo["url"] = onclick_data[13:len(onclick_data) - 3]
+                matchInfo["match_name"] = target_select.css("::text").extract_first()
+                matchInfo["match_url"] = onclick_data[13:len(onclick_data) - 3]
                 #
                 yield matchInfo
 
@@ -77,8 +77,8 @@ class okoooSpider(scrapy.Spider):
                 matchInfo["id"] = re.findall("(\d+)", onclick_data)[0]
                 matchInfo["area"] = "美洲赛事"
                 matchInfo["country"] = country
-                matchInfo["name"] = target_select.css("::text").extract_first()
-                matchInfo["url"] = onclick_data[13:len(onclick_data) - 3]
+                matchInfo["match_name"] = target_select.css("::text").extract_first()
+                matchInfo["match_url"] = onclick_data[13:len(onclick_data) - 3]
                 #
                 yield matchInfo
         # 亚洲
@@ -97,8 +97,8 @@ class okoooSpider(scrapy.Spider):
                 matchInfo["id"] = re.findall("(\d+)", onclick_data)[0]
                 matchInfo["area"] = "亚洲赛事"
                 matchInfo["country"] = country
-                matchInfo["name"] = target_select.css("::text").extract_first()
-                matchInfo["url"] = onclick_data[13:len(onclick_data) - 3]
+                matchInfo["match_name"] = target_select.css("::text").extract_first()
+                matchInfo["match_url"] = onclick_data[13:len(onclick_data) - 3]
                 #
                 yield matchInfo
         # 洲际(杯赛)
@@ -117,7 +117,7 @@ class okoooSpider(scrapy.Spider):
                 matchInfo["id"] = re.findall("(\d+)", onclick_data)[0]
                 matchInfo["area"] = "洲际赛事"
                 matchInfo["country"] = country
-                matchInfo["name"] = target_select.css("::text").extract_first()
-                matchInfo["url"] = onclick_data[13:len(onclick_data) - 3]
+                matchInfo["match_name"] = target_select.css("::text").extract_first()
+                matchInfo["match_url"] = onclick_data[13:len(onclick_data) - 3]
                 #
                 yield matchInfo
