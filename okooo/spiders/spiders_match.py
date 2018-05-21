@@ -12,7 +12,7 @@ from okooo.items import MatchInfo
 
 
 class okoooSpider(scrapy.Spider):
-    name = "sp_soccer"
+    name = "sp_match"
     allowed_domains = ["www.okooo.com"]
 
     headers = {

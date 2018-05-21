@@ -18,7 +18,17 @@ class MatchInfo(scrapy.Item):
     match_url = scrapy.Field()
 
 
-class OkoooItem2(scrapy.Item):
+class ScheduleInfo(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
-    name2 = scrapy.Field()
+    id = scrapy.Field()
+    area = scrapy.Field()
+    country = scrapy.Field()
+    match_name = scrapy.Field()
+    sch_idx = scrapy.Field()
+    sch_url = scrapy.Field()
+    sch_name = scrapy.Field()
+    sch_type = scrapy.Field()
+    sch_group = scrapy.Field()
+    sch_trun = scrapy.Field()
+    schedule_teams = scrapy.Field()
