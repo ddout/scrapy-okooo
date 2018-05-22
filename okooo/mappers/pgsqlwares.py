@@ -34,8 +34,7 @@ class Pgsql(object):
 
     def insertObj(self, sql, **kwargs):
         try:
-            logging.debug("sql:", sql, "kwargs:", kwargs)
-            print("sql:", sql, "kwargs:", kwargs)
+            print("insertObj", " sql:", sql, " kwargs:", kwargs)
             self.__cursor.execute(sql, kwargs)
             self.__connect.commit()
             logging.debug("insert into Success!")
@@ -46,8 +45,7 @@ class Pgsql(object):
 
     def getObj(self, sql, **kwargs):
         try:
-            logging.debug("sql:", sql, "kwargs:", kwargs)
-            print("sql:", sql, "kwargs:", kwargs)
+            print("getObj" , " sql:" , sql , " kwargs:" , kwargs)
             self.__cursor.execute(sql, kwargs)
             obj = self.__cursor.fetchone()
             logging.debug("getObj Success!")
@@ -59,8 +57,7 @@ class Pgsql(object):
 
     def getAll(self, sql, **kwargs):
         try:
-            logging.debug("sql:", sql, "kwargs:", kwargs)
-            print("sql:", sql, "kwargs:", kwargs)
+            print("getAll", " sql:", sql, " kwargs:", kwargs)
             self.__cursor.execute(sql, kwargs)
             obj = self.__cursor.fetchall()
             logging.debug("getObj Success!")

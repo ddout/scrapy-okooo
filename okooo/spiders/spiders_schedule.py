@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import copy
 import json
 import re
 
@@ -39,17 +40,17 @@ class okoooSpider(scrapy.Spider):
         scheduleInfo = {"area": "area", "country": "country", "match_name": "match_name"}
         return [
             scrapy.Request(url=self.index_url, headers=self.headers,
-                           meta={'cookiejar': 1, "scheduleInfo": scheduleInfo}, callback=self.parse_index)]
+                           meta={'cookiejar': 1, "scheduleInfoObj": scheduleInfo}, callback=self.parse_index)]
 
     # 主要解析方法
     def parse_index(self, response):
         # 解析赛季列表
-        #
-        scheduleInfo = response.meta["scheduleInfo"]
-        #
         sch_list = response.css("div.LeftLittleWidth div.LotteryList_Data ul li a").extract()
         idx = len(sch_list)
         for m in sch_list:
+            #
+            scheduleInfo = copy.deepcopy(response.meta["scheduleInfoObj"])
+            #
             target_sel = Selector(text=m)
             name = target_sel.css("::text").extract_first().strip()
             tmp_name = name.encode("utf-8")
@@ -65,99 +66,125 @@ class okoooSpider(scrapy.Spider):
             #
             self.headers["Referer"] = response.url
             yield scrapy.Request(url=self.base_url + url, headers=self.headers,
-                                 meta={'cookiejar': 1, "scheduleInfo": scheduleInfo},
+                                 meta={'cookiejar': 1, "scheduleInfoObj": scheduleInfo},
                                  callback=self.parse_type)
 
     #
     def parse_type(self, response):
         # 解析比赛类型
         logging.debug(response.url)
-        #
-        scheduleInfo = response.meta["scheduleInfo"]
-        logging.debug(scheduleInfo)
         sch_type = response.css("div#m_id").extract()
         type_len = len(sch_type)
         if type_len == 0:
+            #
+            scheduleInfo = copy.deepcopy(response.meta["scheduleInfoObj"])
+            logging.debug(scheduleInfo)
             scheduleInfo["sch_type"] = "无"
+            scheduleInfo["id"] = response.meta["scheduleInfoObj"]["id"] + "_0"
             yield scrapy.Request(url=response.url, headers=self.headers,
-                                 meta={'cookiejar': 1, "scheduleInfo": scheduleInfo},
+                                 meta={'cookiejar': 1, "scheduleInfoObj": scheduleInfo},
                                  callback=self.parse_group)
             logging.debug(scheduleInfo["sch_type"])
         else:
             for type in sch_type:
+                #
+                scheduleInfo = copy.deepcopy(response.meta["scheduleInfoObj"])
+                logging.debug(scheduleInfo)
+                #
                 logging.debug("sch_type html: " + type)
                 sch_type_sel = Selector(text=type)
                 name = sch_type_sel.css("a::text").extract_first()
                 url = sch_type_sel.xpath("//a/@href").extract_first()
                 scheduleInfo["sch_type"] = name
+                scheduleInfo["id"] = response.meta["scheduleInfoObj"]["id"] + "_" + name
                 #
                 yield scrapy.Request(url=self.base_url + url, headers=self.headers,
-                                     meta={'cookiejar': 1, "scheduleInfo": scheduleInfo},
+                                     meta={'cookiejar': 1, "scheduleInfoObj": scheduleInfo},
                                      callback=self.parse_group)
 
     #
     def parse_group(self, response):
         # 解析比赛分组
         logging.debug(response.url)
-        #
-        scheduleInfo = response.meta["scheduleInfo"]
-        logging.debug(scheduleInfo)
         sch_group = response.css("div.tabWidth").extract()
         if len(sch_group) <= 1:
             # 无分组
+            #
+            scheduleInfo = copy.deepcopy(response.meta["scheduleInfoObj"])
+            logging.debug(scheduleInfo)
+            #
             scheduleInfo["sch_group"] = "无"
+            scheduleInfo["id"] = response.meta["scheduleInfoObj"]["id"] + "_0"
             yield scrapy.Request(url=response.url, headers=self.headers,
-                                 meta={'cookiejar': 1, "scheduleInfo": scheduleInfo},
+                                 meta={'cookiejar': 1, "scheduleInfoObj": scheduleInfo},
                                  callback=self.parse_trun)
         else:
             # 有分组
             groups = Selector(text=sch_group[1]).css("a").extract()
             for g in groups:
+                #
+                scheduleInfo = copy.deepcopy(response.meta["scheduleInfoObj"])
+                logging.debug(scheduleInfo)
+                #
                 g_sel = Selector(text=g)
                 name = g_sel.css("a::text").extract_first()
                 url = g_sel.xpath("//@href").extract_first()
                 scheduleInfo["sch_group"] = name
+                scheduleInfo["id"] = response.meta["scheduleInfoObj"]["id"] + "_" + name
                 yield scrapy.Request(url=self.base_url + url, headers=self.headers,
-                                     meta={'cookiejar': 1, "scheduleInfo": scheduleInfo},
+                                     meta={'cookiejar': 1, "scheduleInfoObj": scheduleInfo},
                                      callback=self.parse_trun)
 
     #
     def parse_trun(self, response):
         # 解析比赛轮次和球队
         logging.debug(response.url)
-        #
-        scheduleInfo = response.meta["scheduleInfo"]
-        logging.debug(scheduleInfo)
         sch_trun = response.css("table.linkblock a.OddsLink").extract()
-        #
-        schInfo = ScheduleInfo()
-        schInfo["id"] = scheduleInfo["id"]
-        schInfo["area"] = scheduleInfo["area"]
-        schInfo["country"] = scheduleInfo["country"]
-        schInfo["match_name"] = scheduleInfo["match_name"]
-        schInfo["sch_idx"] = scheduleInfo["sch_idx"]
-        schInfo["sch_name"] = scheduleInfo["sch_name"]
-        schInfo["sch_type"] = scheduleInfo["sch_type"]
-        schInfo["sch_group"] = scheduleInfo["sch_group"]
-
         # schInfo["schedule_teams"] = schInfo["id"]
         if len(sch_trun) == 0:
             # 无轮次
+            #
+            scheduleInfo = copy.deepcopy(response.meta["scheduleInfoObj"])
+            logging.debug(scheduleInfo)
+            #
+            schInfo = ScheduleInfo()
+            schInfo["id"] = scheduleInfo["id"]
+            schInfo["area"] = scheduleInfo["area"]
+            schInfo["country"] = scheduleInfo["country"]
+            schInfo["match_name"] = scheduleInfo["match_name"]
+            schInfo["sch_idx"] = scheduleInfo["sch_idx"]
+            schInfo["sch_name"] = scheduleInfo["sch_name"]
+            schInfo["sch_type"] = scheduleInfo["sch_type"]
+            schInfo["sch_group"] = scheduleInfo["sch_group"]
             schInfo["sch_trun"] = "无"
-            schInfo["id"] = scheduleInfo["id"] + "_0"
-            schInfo["sch_url"] = response.url.replace(self.base_url)
+            schInfo["id"] = response.meta["scheduleInfoObj"]["id"] + "_0"
+            schInfo["sch_url"] = response.url.replace(self.base_url, "")
             yield schInfo
         else:
             # 有轮次
             for t in sch_trun:
+
                 odds_sel = Selector(text=t)
                 trun_name = odds_sel.css("a::text").extract_first();
                 if trun_name == None:
                     continue
                 tmp_name = trun_name.encode("utf-8")
-                if tmp_name == "" or tmp_name == None or tmp_name == "全部":
+                if tmp_name == None or tmp_name == "" or tmp_name == "全部":
                     continue
+                #
+                scheduleInfo = copy.deepcopy(response.meta["scheduleInfoObj"])
+                logging.debug(scheduleInfo)
+                #
+                schInfo = ScheduleInfo()
+                schInfo["id"] = scheduleInfo["id"]
+                schInfo["area"] = scheduleInfo["area"]
+                schInfo["country"] = scheduleInfo["country"]
+                schInfo["match_name"] = scheduleInfo["match_name"]
+                schInfo["sch_idx"] = scheduleInfo["sch_idx"]
+                schInfo["sch_name"] = scheduleInfo["sch_name"]
+                schInfo["sch_type"] = scheduleInfo["sch_type"]
+                schInfo["sch_group"] = scheduleInfo["sch_group"]
                 schInfo["sch_trun"] = trun_name
-                schInfo["id"] = scheduleInfo["id"] + "_0"
+                schInfo["id"] = response.meta["scheduleInfoObj"]["id"] + "_" + trun_name
                 schInfo["sch_url"] = odds_sel.xpath("//@href").extract_first().strip()
                 yield schInfo

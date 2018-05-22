@@ -31,4 +31,4 @@ class ScheduleInfo(scrapy.Item):
     sch_type = scrapy.Field()
     sch_group = scrapy.Field()
     sch_trun = scrapy.Field()
-    schedule_teams = scrapy.Field()
+    #schedule_teams = scrapy.Field()
