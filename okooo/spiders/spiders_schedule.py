@@ -12,8 +12,10 @@ from parsel import Selector
 
 from okooo.items import MatchInfo, ScheduleInfo
 
-
 # 赛季
+from okooo.mappers.mp_match import MatchMapper
+
+
 class okoooSpider(scrapy.Spider):
     name = "sp_schedule"
     allowed_domains = ["www.okooo.com"]
@@ -33,18 +35,36 @@ class okoooSpider(scrapy.Spider):
 
     # start_urls = []
     base_url = "http://www.okooo.com"
-    index_url = "http://www.okooo.com/soccer/league/1/"
+    index_url = "http://www.okooo.com"  # ""http://www.okooo.com/soccer/league/1/"
+    #
+    __matchMapper = None
 
     # 起始加载获取验证码图片
     def start_requests(self):
         logging.debug("加载页面,固化cookies..........")
-        scheduleInfo = {"area": "area", "country": "country", "match_name": "match_name"}
+        self.__matchMapper = MatchMapper()
         return [
             scrapy.Request(url=self.index_url, headers=self.headers,
-                           meta={'cookiejar': 1, "scheduleInfoObj": scheduleInfo}, callback=self.parse_index)]
+                           meta={'cookiejar': 1}, callback=self.loop_start_url)]
+
+    # 增量加载
+    def loop_start_url(self, response):
+        # 从db中读取数据
+        page = 0
+        while True:
+            match_list = self.__matchMapper.getList(limit=10, page=page)
+            if match_list == None or len(match_list) == 0:
+                break
+            page = page + 1
+            for match in match_list:
+                match_url = self.base_url + match["match_url"]
+                scheduleInfo = {"area": match["area"], "country": match["country"], "match_name": match["match_name"]}
+                yield scrapy.Request(url=match_url, headers=self.headers,
+                                     meta={'cookiejar': 1, "scheduleInfoObj": scheduleInfo},
+                                     callback=self.parse_schList)
 
     # 主要解析方法
-    def parse_index(self, response):
+    def parse_schList(self, response):
         # 解析赛季列表
         sch_list = response.css("div.LeftLittleWidth div.LotteryList_Data ul li a").extract()
         idx = len(sch_list)
@@ -58,7 +78,10 @@ class okoooSpider(scrapy.Spider):
             if tmp_name == "积 分 榜" or tmp_name == "射手榜" or tmp_name == "球员信息统计" or tmp_name == "赛季盘口查询":
                 continue
             url = target_sel.xpath("//@href").extract_first().strip()
-            id = re.findall("schedule/(\d+)/", url)[0]
+            id_parse = re.findall("schedule/(\d+)/", url)
+            if len(id_parse) == 0:
+                continue
+            id = id_parse[0]
             scheduleInfo["id"] = id
             scheduleInfo["sch_name"] = name
             scheduleInfo["sch_url"] = url

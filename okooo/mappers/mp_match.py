@@ -20,5 +20,13 @@ class MatchMapper(object):
         match = self.__pgsql.getObj(sql, **{"id": id})
         return match
 
-    def getList(self):
-        pass
+    def getList(self, page=0, limit=10):
+        sql = "select id, area, country, match_name, match_url from okooo.match " \
+              "order by to_number(id,'9999999') asc " \
+              "limit %(limit)s offset %(offset)s ;"
+        #
+        v_offset = page * limit
+        v_limit = limit
+        #
+        params = {"offset": v_offset, "limit": v_limit}
+        return self.__pgsql.getAll(sql, **params)
