@@ -94,6 +94,8 @@ class okoooSpider(scrapy.Spider):
                 logging.debug("sch_type html: " + type)
                 sch_type_sel = Selector(text=type)
                 name = sch_type_sel.css("a::text").extract_first()
+                if name == None or name == "" or name == "null":
+                    continue
                 url = sch_type_sel.xpath("//a/@href").extract_first()
                 scheduleInfo["sch_type"] = name
                 scheduleInfo["id"] = response.meta["scheduleInfoObj"]["id"] + "_" + name
@@ -167,7 +169,9 @@ class okoooSpider(scrapy.Spider):
                 odds_sel = Selector(text=t)
                 trun_name = odds_sel.css("a::text").extract_first();
                 if trun_name == None:
-                    continue
+                    trun_name = odds_sel.css("a b::text").extract_first();
+                    if trun_name == None:
+                        continue
                 tmp_name = trun_name.encode("utf-8")
                 if tmp_name == None or tmp_name == "" or tmp_name == "全部":
                     continue
