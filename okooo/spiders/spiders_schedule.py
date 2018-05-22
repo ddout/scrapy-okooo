@@ -74,9 +74,6 @@ class okoooSpider(scrapy.Spider):
             #
             target_sel = Selector(text=m)
             name = target_sel.css("::text").extract_first().strip()
-            tmp_name = name.encode("utf-8")
-            if tmp_name == "积 分 榜" or tmp_name == "射手榜" or tmp_name == "球员信息统计" or tmp_name == "赛季盘口查询":
-                continue
             url = target_sel.xpath("//@href").extract_first().strip()
             id_parse = re.findall("schedule/(\d+)/", url)
             if len(id_parse) == 0:
