@@ -43,7 +43,6 @@ class okoooSpider(scrapy.Spider):
         match01 = response.css("div#Match01 div.MatchInfoListPic_L").extract()
 
         for m in match01:
-            matchInfo = MatchInfo()
             m_select = Selector(text=m)
             country = m_select.css("div.MatchInfoLogoName::text").extract_first("").strip()
             #
@@ -53,6 +52,7 @@ class okoooSpider(scrapy.Spider):
                 ##
                 onclick_data = target_select.xpath("//@onclick").extract_first().strip()
                 ##
+                matchInfo = MatchInfo()
                 matchInfo["id"] = re.findall("(\d+)", onclick_data)[0]
                 matchInfo["area"] = "欧洲赛事"
                 matchInfo["country"] = country
@@ -62,9 +62,9 @@ class okoooSpider(scrapy.Spider):
                 yield matchInfo
 
         # 美洲
-        match02 = response.css("div#Match02").extract()
+        match02 = response.css("div#Match02 div.MatchInfoListPic_L").extract()
         for m in match02:
-            matchInfo = MatchInfo()
+
             m_select = Selector(text=m)
             country = m_select.css("div.MatchInfoLogoName::text").extract_first("").strip()
             #
@@ -73,6 +73,7 @@ class okoooSpider(scrapy.Spider):
                 target_select = Selector(text=m_name)
                 ##
                 onclick_data = target_select.xpath("//@onclick").extract_first().strip()
+                matchInfo = MatchInfo()
                 ##
                 matchInfo["id"] = re.findall("(\d+)", onclick_data)[0]
                 matchInfo["area"] = "美洲赛事"
@@ -82,9 +83,9 @@ class okoooSpider(scrapy.Spider):
                 #
                 yield matchInfo
         # 亚洲
-        match03 = response.css("div#Match03").extract()
+        match03 = response.css("div#Match03 div.MatchInfoListPic_L").extract()
         for m in match03:
-            matchInfo = MatchInfo()
+
             m_select = Selector(text=m)
             country = m_select.css("div.MatchInfoLogoName::text").extract_first("").strip()
             #
@@ -94,6 +95,7 @@ class okoooSpider(scrapy.Spider):
                 ##
                 onclick_data = target_select.xpath("//@onclick").extract_first().strip()
                 ##
+                matchInfo = MatchInfo()
                 matchInfo["id"] = re.findall("(\d+)", onclick_data)[0]
                 matchInfo["area"] = "亚洲赛事"
                 matchInfo["country"] = country
@@ -102,9 +104,9 @@ class okoooSpider(scrapy.Spider):
                 #
                 yield matchInfo
         # 洲际(杯赛)
-        match04 = response.css("div#Match04").extract()
+        match04 = response.css("div#Match04 div.MatchInfoListPic_L").extract()
         for m in match04:
-            matchInfo = MatchInfo()
+
             m_select = Selector(text=m)
             country = m_select.css("div.MatchInfoLogoName::text").extract_first("").strip()
             #
@@ -114,6 +116,7 @@ class okoooSpider(scrapy.Spider):
                 ##
                 onclick_data = target_select.xpath("//@onclick").extract_first().strip()
                 ##
+                matchInfo = MatchInfo()
                 matchInfo["id"] = re.findall("(\d+)", onclick_data)[0]
                 matchInfo["area"] = "洲际赛事"
                 matchInfo["country"] = country
