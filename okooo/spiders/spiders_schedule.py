@@ -2,6 +2,7 @@
 import copy
 import json
 import re
+import time
 
 import scrapy
 import logging
@@ -76,15 +77,14 @@ class okoooSpider(scrapy.Spider):
         sch_type = response.css("div#m_id").extract()
         type_len = len(sch_type)
         if type_len == 0:
-            #
+            # 没有类型
             scheduleInfo = copy.deepcopy(response.meta["scheduleInfoObj"])
             logging.debug(scheduleInfo)
             scheduleInfo["sch_type"] = "无"
             scheduleInfo["id"] = response.meta["scheduleInfoObj"]["id"] + "_0"
-            yield scrapy.Request(url=response.url, headers=self.headers,
+            yield scrapy.Request(url=buildRandomUrl(response.url), headers=self.headers,
                                  meta={'cookiejar': 1, "scheduleInfoObj": scheduleInfo},
                                  callback=self.parse_group)
-            logging.debug(scheduleInfo["sch_type"])
         else:
             for type in sch_type:
                 #
@@ -115,7 +115,7 @@ class okoooSpider(scrapy.Spider):
             #
             scheduleInfo["sch_group"] = "无"
             scheduleInfo["id"] = response.meta["scheduleInfoObj"]["id"] + "_0"
-            yield scrapy.Request(url=response.url, headers=self.headers,
+            yield scrapy.Request(url=buildRandomUrl(response.url), headers=self.headers,
                                  meta={'cookiejar': 1, "scheduleInfoObj": scheduleInfo},
                                  callback=self.parse_trun)
         else:
@@ -188,3 +188,10 @@ class okoooSpider(scrapy.Spider):
                 schInfo["id"] = response.meta["scheduleInfoObj"]["id"] + "_" + trun_name
                 schInfo["sch_url"] = odds_sel.xpath("//@href").extract_first().strip()
                 yield schInfo
+
+
+def buildRandomUrl(url):
+    if url.find("?") != -1:
+        return url + "&t2=" + str(int(round(time.time() * 1000)))
+    else:
+        return url + "?t=" + str(int(round(time.time() * 1000)))
