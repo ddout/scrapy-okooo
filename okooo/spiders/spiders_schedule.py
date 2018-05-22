@@ -47,6 +47,15 @@ class okoooSpider(scrapy.Spider):
             scrapy.Request(url=self.index_url, headers=self.headers,
                            meta={'cookiejar': 1}, callback=self.loop_start_url)]
 
+        #test
+        #
+        # match_url = "http://www.okooo.com/soccer/league/18/schedule/10089/1-2-46/"
+        # scheduleInfo = {"area": "test", "country": "test", "match_name": "test"}
+        # return [
+        #     scrapy.Request(url=match_url, headers=self.headers,
+        #                    meta={'cookiejar': 1, "scheduleInfoObj": scheduleInfo},
+        #                    callback=self.parse_schList)]
+
     # 增量加载
     def loop_start_url(self, response):
         # 从db中读取数据
@@ -188,10 +197,11 @@ class okoooSpider(scrapy.Spider):
 
                 odds_sel = Selector(text=t)
                 trun_name = odds_sel.css("a::text").extract_first();
-                if trun_name == None:
+                if trun_name == None or trun_name.strip() == "":
                     trun_name = odds_sel.css("a b::text").extract_first();
-                    if trun_name == None:
+                    if trun_name == None or trun_name.strip() == "":
                         continue
+                trun_name = trun_name.strip()
                 tmp_name = trun_name.encode("utf-8")
                 if tmp_name == None or tmp_name == "" or tmp_name == "全部":
                     continue
