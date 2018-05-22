@@ -21,10 +21,10 @@ class Pgsql(object):
     #
 
     def __init__(self):
-        self.__dbpool = psycopg2.pool.SimpleConnectionPool(self.__minconn, self.__maxconn, database=self.__database,
-                                                           user=self.__dbuser,
-                                                           password=self.__password,
-                                                           host=self.__host, port=self.__port)
+        self.__dbpool = psycopg2.pool.ThreadedConnectionPool(self.__minconn, self.__maxconn, database=self.__database,
+                                                             user=self.__dbuser,
+                                                             password=self.__password,
+                                                             host=self.__host, port=self.__port)
         logging.debug("Opened database Pool successfully")
 
     def getConn(self):
