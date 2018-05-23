@@ -1,21 +1,21 @@
 # -*- coding: utf-8 -*-
 import copy
 import json
+import random
 
 import scrapy
 import logging
 import os
 
-# from scrapy.spiders import Rule
-# from scrapy.linkextractors import LinkExtractor
-from parsel import Selector
+# 解析比赛
+from scrapy import Selector
 
 from okooo.items import PlayInfo
+from okooo.mappers.mp_play import PlayMapper
 
 
-# 解析比赛
 class okoooSpider(scrapy.Spider):
-    name = "sp_palys"
+    name = "sp_palys_2"
     allowed_domains = ["www.okooo.com"]
 
     headers = {
@@ -30,25 +30,19 @@ class okoooSpider(scrapy.Spider):
         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.139 Safari/537.36"
     }
 
-    # rules = (
-    #     Rule(LinkExtractor(allow=(r'http://www.okooo.com/soccer/league/[0-9]+/schedule/*')),
-    #          callback="parse_oddsList")
-    # )
-
     # /soccer/league/777/schedule/11958/1-6230-11/
     # /soccer/league/18/schedule/10090/1-2-1/
     # /soccer/league/16/schedule/13542/1-3954/
     base_url = "http://www.okooo.com"
 
-    cookie_jar = -1
-    page = 0
+    __playMapper = None
 
     # 起始加载获取验证码图片
-
     def start_requests(self):
         logging.debug("起始加载获取验证码图片..........")
         captcha_url = "http://www.okooo.com/I/?method=ok.user.settings.authcodepic&r0.2911857041554329"
-        yield scrapy.Request(url=captcha_url, headers=self.headers, meta={'cookiejar': 1}, callback=self.parser_captcha)
+        return [
+            scrapy.Request(url=captcha_url, headers=self.headers, meta={'cookiejar': 1}, callback=self.parser_captcha)]
 
     def parser_captcha(self, response):
         with open('captcha.jpg', 'wb') as f:
@@ -78,7 +72,20 @@ class okoooSpider(scrapy.Spider):
         js = json.loads(response.text)
         if 'user_userlogin_response' in js and 'UserID' in js['user_userlogin_response']:
             print("ok-----okooo is login success!!!!")
-            self.cookie_jar = response.meta['cookiejar']
+            self.__playMapper = PlayMapper()
+            # 从db中读取数据
+            page = 0
+            while True:
+                sch_list = self.__playMapper.getSchList(limit=10, page=page)
+                if sch_list == None or len(sch_list) == 0:
+                    break
+                page = page + 1
+                for sch in sch_list:
+                    play_url = self.base_url + sch["sch_url"]
+                    playInfo = copy.deepcopy(sch)
+                    yield scrapy.Request(url=play_url, headers=self.headers,
+                                         meta={'cookiejar': response.meta['cookiejar'], "playInfoObj": playInfo},
+                                         callback=self.parse_oddsList)
         else:
             if "msg" in js['user_userlogin_response']:
                 print(js['user_userlogin_response']['msg'])
@@ -117,7 +124,6 @@ class okoooSpider(scrapy.Spider):
                 time_str = "20" + time_str
             else:
                 time_str = "19" + time_str
-            time_str = time_str[0:10] + " " + time_str[11:]
             play["play_time"] = time_str
 
         # 主队
@@ -126,22 +132,21 @@ class okoooSpider(scrapy.Spider):
         play["team_vis"] = response.css("#matchTeam div.qpai_zi_1::text").extract_first()
         #
         score_half = response.css("div.jifen_dashi p").extract_first()
+        score_half_p = Selector(text=score_half).xpath("//p/text()").extract_first()
+        if score_half_p != None:
+            score_half = score_half_p
         if score_half != None:
-            score_half_p = Selector(text=score_half).xpath("//p/text()").extract_first()
-            if score_half_p != None:
-                score_half = score_half_p
-            if score_half != None:
-                # 半:1-1
-                score_half_arr = score_half.strip()[2:].split("-")
-                # 比分半场主
-                play["half_home"] = score_half_arr[0]
-                # 比分半场客
-                play["half_vis"] = score_half_arr[1]
-            else:
-                # 比分半场主
-                play["half_home"] = None
-                # 比分半场客
-                play["half_vis"] = None
+            # 半:1-1
+            score_half_arr = score_half.strip()[2:].split("-")
+            # 比分半场主
+            play["half_home"] = score_half_arr[0]
+            # 比分半场客
+            play["half_vis"] = score_half_arr[1]
+        else:
+            # 比分半场主
+            play["half_home"] = None
+            # 比分半场客
+            play["half_vis"] = None
         # $("#matchTeam div.vs span")[0]
         score_full = response.css("#matchTeam div.vs span").extract()
         if score_full == None or len(score_full) == 0:
@@ -182,23 +187,23 @@ class okoooSpider(scrapy.Spider):
         playObj = response.meta["playInfoObj"]
         play = PlayInfo()
         play["odds_info"] = odds_json_str
-        play["id"] = playObj.get("id")
-        play["area"] = playObj.get("area")
-        play["country"] = playObj.get("country")
-        play["match_name"] = playObj.get("match_name")
-        play["sch_name"] = playObj.get("sch_name")
-        play["sch_type"] = playObj.get("sch_type")
-        play["sch_group"] = playObj.get("sch_group")
-        play["sch_trun"] = playObj.get("sch_trun")
+        play["id"] = playObj["id"]
+        play["area"] = playObj["area"]
+        play["country"] = playObj["country"]
+        play["match_name"] = playObj["match_name"]
+        play["sch_name"] = playObj["sch_name"]
+        play["sch_type"] = playObj["sch_type"]
+        play["sch_group"] = playObj["sch_group"]
+        play["sch_trun"] = playObj["sch_trun"]
         #
-        play["play_urls"] = playObj.get("play_urls")
-        play["play_time"] = playObj.get("play_time")
-        play["team_home"] = playObj.get("team_home")
-        play["team_vis"] = playObj.get("team_vis")
-        play["half_home"] = playObj.get("half_home")
-        play["half_vis"] = playObj.get("half_vis")
-        play["full_home"] = playObj.get("full_home")
-        play["full_vis"] = playObj.get("full_vis")
-        play["play_result"] = playObj.get("play_result")
+        play["play_urls"] = playObj["play_urls"]
+        play["play_time"] = playObj["play_time"]
+        play["team_home"] = playObj["team_home"]
+        play["team_vis"] = playObj["team_vis"]
+        play["half_home"] = playObj["half_home"]
+        play["half_vis"] = playObj["half_vis"]
+        play["full_home"] = playObj["full_home"]
+        play["full_vis"] = playObj["full_vis"]
+        play["play_result"] = playObj["play_result"]
         #
         yield play
