@@ -47,3 +47,4 @@ class PlayMapper(object):
         #
         params = {"offset": v_offset, "limit": v_limit}
         return self.__pgsql.getAll(sql, **params)
+

@@ -4,13 +4,14 @@ import copy
 import scrapy
 from scrapy import signals
 
+from okooo.mappers.mp_commons import SpiderStatusMapper
 from okooo.mappers.mp_play import PlayMapper
 
 
 class PlayExt(object):
-
     def __init__(self, settings):
         print("play ext init............")
+        self.__spiderStatusMapper = SpiderStatusMapper()
         pass
 
     @classmethod
@@ -26,6 +27,12 @@ class PlayExt(object):
         spider.log("opened spider %s" % spider.name)
         if spider.name == "sp_palys":
             self.__playMapper = PlayMapper()
+            # 读取记录当前状态
+            status = self.__spiderStatusMapper.loadSpiderStatus(spider_name=spider.name)
+            page = 0
+            if status != None:
+                page = status.get("page", 0)
+            spider.page = page
 
     def spider_closed(self, spider):
         spider.log("opened spider %s" % spider.name)
@@ -36,6 +43,9 @@ class PlayExt(object):
         if spider.name == "sp_palys" and spider.cookie_jar == 1:
             # 从db中读取数据
             page = spider.page
+            # 记录当前状态
+            self.__spiderStatusMapper.saveSpiderStatus(spider_name=spider.name, page=page)
+            #
             sch_list = self.__playMapper.getSchList(limit=10, page=page)
             if sch_list != None and len(sch_list) > 0:
                 spider.page = page + 1
@@ -43,5 +53,6 @@ class PlayExt(object):
                     play_url = spider.base_url + sch["sch_url"]
                     playInfo = copy.deepcopy(sch)
                     res = scrapy.Request(url=play_url, headers=spider.headers,
-                                         meta={'cookiejar': spider.cookie_jar, "playInfoObj": playInfo}, callback=spider.parse_oddsList)
+                                         meta={'cookiejar': spider.cookie_jar, "playInfoObj": playInfo},
+                                         callback=spider.parse_oddsList)
                     spider.crawler.engine.crawl(res, spider)
