@@ -64,6 +64,20 @@ class Pgsql(object):
             self.closeConn(conn)
         return None
 
+    def modifyObj(self, sql, **kwargs):
+        conn = self.getConn()
+        try:
+            print("modifyObj", " sql:", sql, " kwargs:", kwargs)
+            cursor = self.getCursor(conn)
+            cursor.execute(sql, kwargs)
+            conn.commit()
+        except Exception, e:
+            logging.error(msg=e)
+            conn.rollback()
+        finally:
+            self.closeConn(conn)
+        return None
+
     def getObj(self, sql, **kwargs):
         conn = self.getConn()
         try:

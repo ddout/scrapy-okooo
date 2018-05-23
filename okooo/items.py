@@ -45,9 +45,10 @@ class PlayInfo(scrapy.Item):
     sch_group = scrapy.Field()
     sch_trun = scrapy.Field()
     #
+    play_urls = scrapy.Field()
+    play_time = scrapy.Field()
     team_home = scrapy.Field()
     team_vis = scrapy.Field()
-    play_time = scrapy.Field()
     half_home = scrapy.Field()
     half_vis = scrapy.Field()
     full_home = scrapy.Field()
