@@ -25,13 +25,17 @@ class PlayExt(object):
 
     def spider_opened(self, spider):
         spider.log("opened spider %s" % spider.name)
-        if spider.name == "sp_palys":
+        if spider.name == "sp_palys_odd" or spider.name == "sp_palys_even":
             self.__playMapper = PlayMapper()
             # 读取记录当前状态
             status = self.__spiderStatusMapper.loadSpiderStatus(spider_name=spider.name)
             page = 0
             if status != None:
                 page = status.get("page", 0)
+            if spider.name == "sp_palys_odd":
+                page = 1
+            if spider.name == "sp_palys_even":
+                page = 0
             spider.page = page
 
     def spider_closed(self, spider):
@@ -40,7 +44,7 @@ class PlayExt(object):
     def spider_idle(self, spider):
         spider.log("opened spider %s" % spider.name)
 
-        if spider.name == "sp_palys" and spider.cookie_jar == 1:
+        if (spider.name == "sp_palys_odd" or spider.name == "sp_palys_even") and spider.cookie_jar != -1:
             # 从db中读取数据
             page = spider.page
             # 记录当前状态
@@ -48,7 +52,7 @@ class PlayExt(object):
             #
             sch_list = self.__playMapper.getSchList(limit=10, page=page)
             if sch_list != None and len(sch_list) > 0:
-                spider.page = page + 1
+                spider.page = page + 2
                 for sch in sch_list:
                     play_url = spider.base_url + sch["sch_url"]
                     playInfo = copy.deepcopy(sch)

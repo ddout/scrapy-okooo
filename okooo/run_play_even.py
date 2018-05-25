@@ -7,4 +7,4 @@ from scrapy import cmdline
 # 赛事-赛季列表
 #cmdline.execute("scrapy crawl sp_schedule".split())
 # 解析比赛
-cmdline.execute("scrapy crawl sp_palys".split())
+cmdline.execute("scrapy crawl sp_palys_even".split())

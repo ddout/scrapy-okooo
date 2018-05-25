@@ -14,8 +14,8 @@ from okooo.items import PlayInfo
 
 
 # 解析比赛
-class okoooPlayOddSpider(scrapy.Spider):
-    name = "sp_palys_odd"
+class okoooPlayEvenSpider(scrapy.Spider):
+    name = "sp_palys_even"
     allowed_domains = ["www.okooo.com"]
 
     headers = {
@@ -48,13 +48,13 @@ class okoooPlayOddSpider(scrapy.Spider):
     def start_requests(self):
         logging.debug("起始加载获取验证码图片..........")
         captcha_url = "http://www.okooo.com/I/?method=ok.user.settings.authcodepic&r0.2911857041554329"
-        yield scrapy.Request(url=captcha_url, headers=self.headers, meta={'cookiejar': 1}, callback=self.parser_captcha)
+        yield scrapy.Request(url=captcha_url, headers=self.headers, meta={'cookiejar': 2}, callback=self.parser_captcha)
 
     def parser_captcha(self, response):
-        with open('captcha_odd.jpg', 'wb') as f:
+        with open('captcha_even.jpg', 'wb') as f:
             f.write(response.body)
             f.close()
-        print(u"请到 {0} 目录找到captcha_odd.jpg 手动输入".format(os.path.abspath('captcha_odd.jpg')))
+        print(u"请到 {0} 目录找到captcha_even.jpg 手动输入".format(os.path.abspath('captcha_even.jpg')))
 
         captcha_val = raw_input("please input the captcha >>") + ""
 
