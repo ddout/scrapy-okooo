@@ -14,8 +14,8 @@ from okooo.items import PlayInfo
 
 
 # 解析比赛
-class okoooSpider(scrapy.Spider):
-    name = "sp_palys"
+class okoooPlayOddSpider(scrapy.Spider):
+    name = "sp_palys_odd"
     allowed_domains = ["www.okooo.com"]
 
     headers = {
