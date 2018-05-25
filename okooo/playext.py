@@ -32,10 +32,11 @@ class PlayExt(object):
             page = 0
             if status != None:
                 page = status.get("page", 0)
-            if spider.name == "sp_palys_odd":
-                page = 1
-            if spider.name == "sp_palys_even":
-                page = 0
+            else:
+                if spider.name == "sp_palys_odd":
+                    page = 1
+                if spider.name == "sp_palys_even":
+                    page = 0
             spider.page = page
 
     def spider_closed(self, spider):
