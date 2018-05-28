@@ -10,6 +10,7 @@ import os
 # from scrapy.linkextractors import LinkExtractor
 from parsel import Selector
 
+from okooo.img.img_yzm import getImgBase64, getYZM
 from okooo.items import PlayInfo
 
 
@@ -54,11 +55,13 @@ class okoooPlayEvenSpider(scrapy.Spider):
         with open('captcha_even.jpg', 'wb') as f:
             f.write(response.body)
             f.close()
-        print(u"请到 {0} 目录找到captcha_even.jpg 手动输入".format(os.path.abspath('captcha_even.jpg')))
+        # print(u"请到 {0} 目录找到captcha_even.jpg 手动输入".format(os.path.abspath('captcha_even.jpg')))
 
-        captcha_val = raw_input("please input the captcha >>") + ""
+        # captcha_val = raw_input("please input the captcha >>") + ""
 
-        print(captcha_val)
+        captcha_val = getYZM(getImgBase64(os.path.abspath('captcha_even.jpg')))
+
+        print("yzm_even:", captcha_val)
 
         post_url = "http://www.okooo.com/I/?method=user.user.userlogin"
         post_data = {

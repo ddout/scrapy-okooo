@@ -10,6 +10,7 @@ import os
 # from scrapy.linkextractors import LinkExtractor
 from parsel import Selector
 
+from okooo.img.img_yzm import getImgBase64, getYZM
 from okooo.items import PlayInfo
 
 
@@ -54,10 +55,12 @@ class okoooPlayOddSpider(scrapy.Spider):
         with open('captcha_odd.jpg', 'wb') as f:
             f.write(response.body)
             f.close()
-        print(u"请到 {0} 目录找到captcha_odd.jpg 手动输入".format(os.path.abspath('captcha_odd.jpg')))
+        #print(u"请到 {0} 目录找到captcha_odd.jpg 手动输入".format(os.path.abspath('captcha_odd.jpg')))
 
-        captcha_val = raw_input("please input the captcha >>") + ""
+        #captcha_val = raw_input("please input the captcha >>") + ""
+        captcha_val = getYZM(getImgBase64(os.path.abspath('captcha_odd.jpg')))
 
+        print("yzm_odd:", captcha_val)
         print(captcha_val)
 
         post_url = "http://www.okooo.com/I/?method=user.user.userlogin"
