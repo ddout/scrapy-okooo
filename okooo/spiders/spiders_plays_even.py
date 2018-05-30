@@ -63,6 +63,11 @@ class okoooPlayEvenSpider(scrapy.Spider):
 
         print("yzm_even:", captcha_val)
 
+        img_path = os.path.abspath('captcha_even.jpg')
+        if os.path.exists(img_path):
+            os.remove(img_path)
+            print("captcha.jpg is removed!!!")
+
         post_url = "http://www.okooo.com/I/?method=user.user.userlogin"
         post_data = {
             "UserName": "he56789",

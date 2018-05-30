@@ -61,7 +61,11 @@ class okoooPlayOddSpider(scrapy.Spider):
         captcha_val = getYZM(getImgBase64(os.path.abspath('captcha_odd.jpg')))
 
         print("yzm_odd:", captcha_val)
-        print(captcha_val)
+
+        img_path = os.path.abspath('captcha_odd.jpg')
+        if os.path.exists(img_path):
+            os.remove(img_path)
+            print("captcha.jpg is removed!!!")
 
         post_url = "http://www.okooo.com/I/?method=user.user.userlogin"
         post_data = {
