@@ -8,11 +8,11 @@ import psycopg2.pool
 
 
 class Pgsql(object):
-    __database = "db_ddout"
+    __database = "booldata"
     __dbuser = "ddout"
-    __password = "ddout"
-    __host = "192.168.56.101"
-    __port = "5432"
+    __password = "ddout123"
+    __host = "118.123.247.201"
+    __port = "7001"
     __minconn = 1
     __maxconn = 40
     #

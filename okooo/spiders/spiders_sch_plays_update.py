@@ -16,7 +16,7 @@ from okooo.items import PlayInfo
 
 # 解析比赛
 class okoooPlayOddSpider(scrapy.Spider):
-    name = "sp_palys_odd"
+    name = "spiders_sch_plays_update"
     allowed_domains = ["www.okooo.com"]
 
     headers = {
@@ -52,17 +52,17 @@ class okoooPlayOddSpider(scrapy.Spider):
         yield scrapy.Request(url=captcha_url, headers=self.headers, meta={'cookiejar': 1}, callback=self.parser_captcha)
 
     def parser_captcha(self, response):
-        with open('captcha_odd.jpg', 'wb') as f:
+        with open('captcha_sch_plays_update.jpg', 'wb') as f:
             f.write(response.body)
             f.close()
         # print(u"请到 {0} 目录找到captcha_odd.jpg 手动输入".format(os.path.abspath('captcha_odd.jpg')))
 
         # captcha_val = raw_input("please input the captcha >>") + ""
-        captcha_val = getYZM(getImgBase64(os.path.abspath('captcha_odd.jpg')))
+        captcha_val = getYZM(getImgBase64(os.path.abspath('captcha_sch_plays_update.jpg')))
 
         print("yzm_odd:", captcha_val)
 
-        img_path = os.path.abspath('captcha_odd.jpg')
+        img_path = os.path.abspath('captcha_sch_plays_update.jpg')
         if os.path.exists(img_path):
             os.remove(img_path)
             print("captcha.jpg is removed!!!")
