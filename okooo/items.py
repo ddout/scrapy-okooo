@@ -54,4 +54,5 @@ class PlayInfo(scrapy.Item):
     full_home = scrapy.Field()
     full_vis = scrapy.Field()
     play_result = scrapy.Field()
+    play_result_detail = scrapy.Field()
     odds_info = scrapy.Field()

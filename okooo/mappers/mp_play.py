@@ -17,7 +17,7 @@ class PlayMapper(object):
                   " values(%(id)s, %(play_urls)s, %(area)s, %(country)s, %(match_name)s, " \
                   " %(sch_name)s, %(sch_type)s, %(sch_group)s, %(sch_trun)s, %(play_time)s, " \
                   " %(team_home)s, %(team_vis)s, %(half_home)s, %(half_vis)s, %(full_home)s, " \
-                  " %(full_vis)s, %(play_result)s, %(odds_info)s );"
+                  " %(full_vis)s, %(play_result)s, %(play_result_detail)s, %(odds_info)s );"
             self.__pgsql.insertObj(sql, **kwargs)
         else:
             sql = "update okooo.play set " \
@@ -28,6 +28,7 @@ class PlayMapper(object):
                   " team_home=%(team_home)s, team_vis=%(team_vis)s, " \
                   " half_home=%(half_home)s, half_vis=%(half_vis)s, " \
                   " full_home=%(full_home)s, full_vis=%(full_vis)s, " \
+                  " play_result_detail=%(play_result_detail)s,"\
                   " play_result=%(play_result)s, odds_info=%(odds_info)s " \
                   " where id=%(id)s"
             self.__pgsql.modifyObj(sql, **kwargs)

@@ -117,6 +117,8 @@ class okoooPlayOddSpider(scrapy.Spider):
         time_str = response.css("div.qbox_1 div.qbx_2 p::text").extract_first()
         if time_str == None or time_str.encode("utf-8") == "延期":
             play["play_time"] = None
+            if time_str.encode("utf-8") == "延期":
+                play["﻿play_result_detail"] = "延期"
         else:
             time_year = time_str.split("-")[0]
             if int(time_year) >= 1 and int(time_year) < 30:
