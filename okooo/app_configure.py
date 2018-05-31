@@ -11,5 +11,14 @@ app_config = {
     },
     "yzm_cfg": {
         "appcode": ""
+    },
+    "pgsql": {
+        "database": "",
+        "dbuser": "",
+        "password": "",
+        "host": "",
+        "port": "",
+        "minconn": 1,
+        "maxconn": 40
     }
 }

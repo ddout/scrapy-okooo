@@ -6,15 +6,17 @@ import psycopg2
 import psycopg2.extras
 import psycopg2.pool
 
+from okooo.app_configure import app_config
+
 
 class Pgsql(object):
-    __database = "booldata"
-    __dbuser = "ddout"
-    __password = "ddout123"
-    __host = "118.123.247.201"
-    __port = "7001"
-    __minconn = 1
-    __maxconn = 40
+    __database = app_config["pgsql"]["database"]
+    __dbuser = app_config["pgsql"]["dbuser"]
+    __password = app_config["pgsql"]["password"]
+    __host = app_config["pgsql"]["host"]
+    __port = app_config["pgsql"]["port"]
+    __minconn = app_config["pgsql"]["minconn"]
+    __maxconn = app_config["pgsql"]["maxconn"]
     #
     __dbpool = None
 
