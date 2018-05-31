@@ -4,6 +4,8 @@
 import base64, urllib, urllib2
 import json
 
+from okooo.app_configure import app_config
+
 
 def getImgBase64(path):
     with open(path, "rb") as f:
@@ -17,7 +19,7 @@ def getYZM(img_base64):
     host = 'http://txyzmsb.market.alicloudapi.com'
     path = '/yzm'
     method = 'POST'
-    appcode = ''
+    appcode = app_config["yzm_cfg"]["appcode"]
     querys = ''
     bodys = {}
     url = host + path
@@ -35,5 +37,3 @@ def getYZM(img_base64):
         data = json.loads(content)
         if data.get("errCode") == 0:
             return data.get("v_code")
-
-

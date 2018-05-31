@@ -10,6 +10,7 @@ import os
 # from scrapy.linkextractors import LinkExtractor
 from parsel import Selector
 
+from okooo.app_configure import app_config
 from okooo.img.img_yzm import getImgBase64, getYZM
 from okooo.items import PlayInfo
 
@@ -69,14 +70,9 @@ class okoooPlayEvenSpider(scrapy.Spider):
             print("captcha.jpg is removed!!!")
 
         post_url = "http://www.okooo.com/I/?method=user.user.userlogin"
-        post_data = {
-            "UserName": "he56789",
-            "PassWord": "he567890",
-            "LoginType": "okooo",
-            "RememberMe": "0",
-            "AuthType": "okooo",
-            "AuthCode": captcha_val
-        }
+        post_data = app_config["login_post_data"]
+        post_data["AuthCode"] = captcha_val
+
         return [scrapy.FormRequest(url=post_url, formdata=post_data, headers=self.headers,
                                    meta={'cookiejar': response.meta['cookiejar']}, callback=self.check_login)]
 
