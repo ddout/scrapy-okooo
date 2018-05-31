@@ -119,7 +119,7 @@ class okoooPlayEvenSpider(scrapy.Spider):
                 play["﻿play_result_detail"] = "延期"
         else:
             time_year = time_str.split("-")[0]
-            if int(time_year) >= 1 and int(time_year) < 30:
+            if int(time_year) >= 0 and int(time_year) < 30:
                 time_str = "20" + time_str
             else:
                 time_str = "19" + time_str
