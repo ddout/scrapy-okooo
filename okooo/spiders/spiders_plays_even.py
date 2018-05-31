@@ -113,18 +113,19 @@ class okoooPlayEvenSpider(scrapy.Spider):
         play["play_urls"] = response.url
         # 赛事时间
         time_str = response.css("div.qbox_1 div.qbx_2 p::text").extract_first()
-        if time_str == None or time_str.encode("utf-8") == "延期":
+        if time_str == None:
             play["play_time"] = None
+        else:
             if time_str.encode("utf-8") == "延期":
                 play["﻿play_result_detail"] = "延期"
-        else:
-            time_year = time_str.split("-")[0]
-            if int(time_year) >= 0 and int(time_year) < 30:
-                time_str = "20" + time_str
             else:
-                time_str = "19" + time_str
-            time_str = time_str[0:10] + " " + time_str[11:]
-            play["play_time"] = time_str
+                time_year = time_str.split("-")[0]
+                if int(time_year) >= 0 and int(time_year) < 30:
+                    time_str = "20" + time_str
+                else:
+                    time_str = "19" + time_str
+                time_str = time_str[0:10] + " " + time_str[11:]
+                play["play_time"] = time_str
 
         # 主队
         play["team_home"] = response.css("#matchTeam div.qpai_zi::text").extract_first()
