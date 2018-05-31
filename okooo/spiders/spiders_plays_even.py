@@ -138,7 +138,7 @@ class okoooPlayEvenSpider(scrapy.Spider):
                 score_half = score_half_p
             if score_half != None:
                 # 半:1-1
-                score_half_arr = score_half.strip()[2:].split("-")
+                score_half_arr = score_half.strip()[2:].split(" ")[0].split("-")
                 # 比分半场主
                 play["half_home"] = score_half_arr[0]
                 # 比分半场客
