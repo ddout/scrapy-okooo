@@ -210,6 +210,6 @@ class okoooPlayEvenSpider(scrapy.Spider):
         play["full_home"] = playObj.get("full_home")
         play["full_vis"] = playObj.get("full_vis")
         play["play_result"] = playObj.get("play_result")
-        play["﻿play_result_detail"] = playObj.get("﻿play_result_detail")
+        play["play_result_detail"] = playObj.get("play_result_detail")
         #
         yield play

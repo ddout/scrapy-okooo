@@ -88,7 +88,7 @@ class PlayExt(object):
                 if play_list != None and len(play_list) > 0:
                     spider.playpage = playpage + 1
                     for play in play_list:
-                        play_url = spider.base_url + "/soccer/match/" + play["id"] + "/odds/"
+                        play_url = spider.base_url + "/soccer/match/" + str(play["id"]) + "/odds/"
                         playInfo = copy.deepcopy(play)
                         res = scrapy.Request(url=play_url, headers=spider.headers,
                                              meta={'cookiejar': spider.cookie_jar, "playInfoObj": playInfo},

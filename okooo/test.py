@@ -1,3 +1,3 @@
 # -*- coding: utf-8 -*-
-
-print("aa1" in ["aa","bb"])
+play = {"id":1}
+print(str(play["id"]) + "ss")
