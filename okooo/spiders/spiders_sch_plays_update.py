@@ -43,6 +43,7 @@ class okoooPlayOddSpider(scrapy.Spider):
 
     cookie_jar = -1
     page = 0
+    playpage = 0
 
     # 起始加载获取验证码图片
 
@@ -208,5 +209,6 @@ class okoooPlayOddSpider(scrapy.Spider):
         play["full_home"] = playObj.get("full_home")
         play["full_vis"] = playObj.get("full_vis")
         play["play_result"] = playObj.get("play_result")
+        play["﻿play_result_detail"] = playObj.get("﻿play_result_detail")
         #
         yield play

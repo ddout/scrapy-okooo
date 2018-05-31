@@ -65,7 +65,7 @@ class PlayExt(object):
                                          meta={'cookiejar': spider.cookie_jar, "playInfoObj": playInfo},
                                          callback=spider.parse_oddsList)
                     spider.crawler.engine.crawl(res, spider)
-        #
+        # 没有比赛的赛季
         if (spider.name in self.__spider_name2) and spider.cookie_jar != -1:
             # 从db中读取数据
             page = spider.page
@@ -80,3 +80,17 @@ class PlayExt(object):
                                          meta={'cookiejar': spider.cookie_jar, "playInfoObj": playInfo},
                                          callback=spider.parse_oddsList)
                     spider.crawler.engine.crawl(res, spider)
+            else:
+                # 比赛详情更新
+                playpage = spider.playpage
+                #
+                play_list = self.__dataUpdateMapper.getModifyPlayList(limit=10, page=playpage)
+                if play_list != None and len(play_list) > 0:
+                    spider.playpage = playpage + 1
+                    for play in play_list:
+                        play_url = spider.base_url + "/soccer/match/" + play["id"] + "/odds/"
+                        playInfo = copy.deepcopy(play)
+                        res = scrapy.Request(url=play_url, headers=spider.headers,
+                                             meta={'cookiejar': spider.cookie_jar, "playInfoObj": playInfo},
+                                             callback=spider.parse_playInfo)
+                        spider.crawler.engine.crawl(res, spider)
