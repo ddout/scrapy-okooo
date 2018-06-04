@@ -45,6 +45,7 @@ class okoooPlayOddSpider(scrapy.Spider):
     cookie_jar = -1
     page = 0
     playpage = 0
+    sch_over = False
 
     # 起始加载获取验证码图片
 

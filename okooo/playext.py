@@ -69,18 +69,23 @@ class PlayExt(object):
         if (spider.name in self.__spider_name2) and spider.cookie_jar != -1:
             # 从db中读取数据
             page = spider.page
+            sch_over = spider.sch_over
             #
-            sch_list = self.__dataUpdateMapper.getDotHavePlaySchList(limit=10, page=page)
-            if sch_list != None and len(sch_list) > 0:
-                spider.page = page + 1
-                for sch in sch_list:
-                    play_url = spider.base_url + sch["sch_url"]
-                    playInfo = copy.deepcopy(sch)
-                    res = scrapy.Request(url=play_url, headers=spider.headers,
-                                         meta={'cookiejar': spider.cookie_jar, "playInfoObj": playInfo},
-                                         callback=spider.parse_oddsList)
-                    spider.crawler.engine.crawl(res, spider)
-            else:
+            if sch_over == False:
+                sch_list = self.__dataUpdateMapper.getDotHavePlaySchList(limit=10, page=page)
+                if sch_list != None and len(sch_list) > 0:
+                    spider.page = page + 1
+                    for sch in sch_list:
+                        play_url = spider.base_url + sch["sch_url"]
+                        playInfo = copy.deepcopy(sch)
+                        res = scrapy.Request(url=play_url, headers=spider.headers,
+                                             meta={'cookiejar': spider.cookie_jar, "playInfoObj": playInfo},
+                                             callback=spider.parse_oddsList)
+                        spider.crawler.engine.crawl(res, spider)
+                else:
+                    spider.sch_over = True
+                    sch_over = True
+            if sch_over == True:
                 # 比赛详情更新
                 playpage = spider.playpage
                 #
