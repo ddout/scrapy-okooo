@@ -50,18 +50,18 @@ class DataUpdateMapper(object):
                 from okooo.play
                 where 
                   (
-                   team_home is null  
+                   (team_home is null and play_time is not null)
                     or
                        (
                        team_home is not null
                        and play_result is null
                        and play_time is not null
                        and play_time < now()
-                       and play_time >= (now() - interval '1 year')
+                       and play_time >= (now() - interval '10 day')
                        and play_result_detail is null
                        )
                    )
-                order by id asc 
+                order by paly_time desc 
                 limit %(limit)s offset %(offset)s
               """
         #
